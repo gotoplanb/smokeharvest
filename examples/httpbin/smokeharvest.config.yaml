@@ -1,0 +1,70 @@
+# SmokeHarvest Configuration: httpbin.org Example
+# 
+# This is a simple example you can run immediately to prove the concept works.
+# httpbin.org is a free HTTP testing service with stable endpoints.
+
+app:
+  name: httpbin
+  base_url: https://httpbin.org
+
+auth:
+  type: none
+
+output:
+  test_directory: ./baseline
+  test_framework: pytest-playwright
+  language: python
+
+critical_paths:
+  - name: form_submission
+    description: Submit the pizza order form and verify the response shows our data
+    steps:
+      - action: navigate
+        target: /forms/post
+        description: Go to the HTML form page
+
+      - action: fill_form
+        description: Fill out the pizza order form with test data
+        fields:
+          - name: custname
+            selector: input[name="custname"]
+            value: "Test Customer"
+          - name: custtel
+            selector: input[name="custtel"]
+            value: "555-1234"
+          - name: custemail
+            selector: input[name="custemail"]
+            value: "test@example.com"
+          - name: size
+            selector: input[name="size"][value="medium"]
+            type: radio
+          - name: topping_bacon
+            selector: input[name="topping"][value="bacon"]
+            type: checkbox
+          - name: topping_cheese
+            selector: input[name="topping"][value="cheese"]
+            type: checkbox
+          - name: delivery
+            selector: input[name="delivery"]
+            value: "12:00"
+          - name: comments
+            selector: textarea[name="comments"]
+            value: "Ring doorbell twice"
+
+      - action: submit
+        selector: button[type="submit"]
+        description: Submit the form
+
+      - action: verify_response
+        description: Confirm the response page displays our submitted data
+        assertions:
+          - type: contains_text
+            value: "Test Customer"
+          - type: contains_text
+            value: "555-1234"
+          - type: contains_text
+            value: "medium"
+          - type: contains_text
+            value: "bacon"
+          - type: contains_text
+            value: "cheese"

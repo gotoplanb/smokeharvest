@@ -1,0 +1,33 @@
+# Environment files (contain secrets)
+.env
+.env.local
+.env.*.local
+
+# Never commit these
+*.pem
+*.key
+credentials.json
+secrets.yaml
+
+# Generated test artifacts (keep baseline/, ignore temp files)
+*_new.py
+test-results/
+playwright-report/
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Node (if someone adds Playwright locally)
+node_modules/
+package-lock.json
+yarn.lock

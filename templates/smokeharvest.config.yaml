@@ -1,0 +1,89 @@
+# SmokeHarvest Configuration Template
+#
+# Copy this file into your project and customize for your application.
+# See examples/httpbin/ for a working example.
+
+app:
+  name: your-app-name
+  # Static base URL:
+  base_url: https://your-app.example.com
+  # Or read from environment variable (for multi-environment setups):
+  # base_url_env: SMOKEHARVEST_BASE_URL
+
+# Authentication configuration
+# Options: none, username_password, oauth, api_key
+auth:
+  type: username_password
+  # For username_password, credentials are read from environment variables
+  username_env: YOUR_APP_TEST_USER
+  password_env: YOUR_APP_TEST_PASS
+  # Login URL (if different from base_url)
+  login_url: /login
+
+# Where to save generated tests
+output:
+  # Static directory:
+  test_directory: ./tests/e2e
+  # Or read from environment variable (for multi-environment setups):
+  # test_directory_env: SMOKEHARVEST_OUTPUT_DIR
+  test_framework: pytest-playwright
+  language: python
+
+# Define your critical paths - the most important user journeys
+# These are what SmokeHarvest will test and monitor for changes
+critical_paths:
+  - name: example_critical_path
+    description: Brief description of what this path tests
+    steps:
+      # Navigate to a page
+      - action: navigate
+        target: /some-page
+        description: Go to the starting page
+
+      # Fill out a form
+      - action: fill_form
+        description: Complete the main form
+        fields:
+          - name: field_name
+            selector: input[name="field_name"]  # CSS selector
+            value: "test value"
+          - name: dropdown
+            selector: select[name="dropdown"]
+            value: "option_value"
+          - name: checkbox
+            selector: input[type="checkbox"]
+            type: checkbox  # for checkboxes/radios
+
+      # Click a button / submit
+      - action: click
+        selector: button[type="submit"]
+        description: Submit the form
+
+      # Verify results
+      - action: verify
+        description: Confirm the action succeeded
+        assertions:
+          - type: contains_text
+            value: "Success"
+          - type: url_contains
+            value: "/dashboard"
+          - type: element_visible
+            selector: "[data-testid='success-message']"
+
+  # Add more critical paths as needed
+  # - name: another_path
+  #   description: ...
+  #   steps: ...
+
+# Optional: selector strategy preferences
+selectors:
+  # Preferred selector attributes, in order of preference
+  prefer:
+    - data-testid
+    - data-test
+    - name
+    - id
+  # Avoid these (brittle)
+  avoid:
+    - xpath
+    - nth-child
