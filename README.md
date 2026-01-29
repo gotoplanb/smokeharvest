@@ -190,6 +190,7 @@ This turns SmokeHarvest into **deployment pipeline observability**—you're not 
 
 - [SPEC.md](./SPEC.md) — Full specification and design rationale
 - [docs/auth-patterns.md](./docs/auth-patterns.md) — Handling authentication scenarios
+- [docs/visual-diffing.md](./docs/visual-diffing.md) — Optional screenshot diffing recipe
 - [examples/httpbin/](./examples/httpbin/) — Working example you can run now
 
 ## License

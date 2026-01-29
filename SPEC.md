@@ -285,6 +285,20 @@ On subsequent runs, SmokeHarvest compares generated tests against the baseline a
 | 🔄 **Probable UI Update** | Selector changed but element still present, text changed, new fields added | `[data-testid="save-button"]` → `[data-testid="save-flight-btn"]` |
 | ❓ **Needs Review** | Ambiguous changes, timing differences, intermittent elements | New modal appears sometimes |
 
+#### Screenshot Diffing (Optional but Useful)
+
+If you capture screenshots to compare runs, keep them stable:
+
+- **Fix the viewport** (example: 1024x768) for both exploratory and scripted runs.
+- **Prefer viewport-only screenshots** (not full-page) to avoid height drift from dynamic content.
+- **Name pairs consistently** (e.g., `explore-01-home.png` and `script-01-home.png`) so automated diffs can match them.
+
+If you are using Playwright MCP inside Docker, screenshots are written in the container (often under `/tmp/playwright-output`). Copy them to your repo with:
+
+```bash
+docker cp <container_name>:/tmp/playwright-output/. /path/to/your/repo/screenshots/
+```
+
 ### 4. Output: GitHub PR
 
 ```markdown
@@ -406,6 +420,12 @@ This is intentionally NOT a maintained open source library. It's a recipe—a do
 - Claude + Playwright MCP does the heavy lifting; this just tells it what to do
 
 If the Playwright MCP changes, you update your prompts. If your app changes, you update your config. You own it.
+
+## Learn More
+
+- [docs/auth-patterns.md](./docs/auth-patterns.md) — Handling authentication scenarios
+- [docs/visual-diffing.md](./docs/visual-diffing.md) — Optional screenshot diffing recipe
+- [examples/httpbin/](./examples/httpbin/) — Working example you can run now
 
 ## Open Questions
 

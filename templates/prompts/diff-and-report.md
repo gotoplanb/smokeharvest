@@ -22,6 +22,13 @@ For each critical path defined in the config:
    - Are there elements missing that were there before?
    - Do all assertions still pass?
 
+Optional: Capture screenshots for visual diffs
+- Use a fixed viewport size (example: 1024x768)
+- Prefer viewport-only screenshots (not full-page)
+- Save in predictable pairs, e.g. `explore-01-*.png` vs `script-01-*.png`
+- If running inside MCP Docker, copy `/tmp/playwright-output` to your repo with:
+  `docker cp <container_name>:/tmp/playwright-output/. /path/to/your/repo/screenshots/`
+
 **Step 2: Compare against baseline**
 
 Read the existing baseline tests in the output directory.
