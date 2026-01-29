@@ -23,11 +23,16 @@ For each critical path defined in the config:
    - Do all assertions still pass?
 
 Optional: Capture screenshots for visual diffs
+- Create a timestamped run folder: `mkdir -p screenshots/$TIMESTAMP/explore screenshots/$TIMESTAMP/script`
 - Use a fixed viewport size (example: 1024x768)
 - Prefer viewport-only screenshots (not full-page)
-- Save in predictable pairs, e.g. `explore-01-*.png` vs `script-01-*.png`
-- If running inside MCP Docker, copy `/tmp/playwright-output` to your repo with:
-  `docker cp <container_name>:/tmp/playwright-output/. /path/to/your/repo/screenshots/`
+- Name files `NN-description.png` (e.g., `01-login.png`, `03-after-otp.png`)
+- Explore screenshots go in `screenshots/$TIMESTAMP/explore/`
+- Script screenshots go in `screenshots/$TIMESTAMP/script/`
+- If running inside MCP Docker, copy screenshots out with:
+  `docker cp <container_name>:/tmp/playwright-output/. screenshots/$TIMESTAMP/explore/`
+- Run the diff script: `python3 scripts/diff_screenshots.py screenshots/$TIMESTAMP`
+- The report and diff images land in the same run folder
 
 **Step 2: Compare against baseline**
 

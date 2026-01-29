@@ -18,19 +18,28 @@ End-to-end tests are valuable but tedious to write and maintain. When UI changes
 smokeharvest/
 ├── README.md                      # Quick start and concept overview
 ├── SPEC.md                        # This file - full specification
+├── .gitignore                     # Keeps .env and secrets out of git
 ├── examples/
 │   └── httpbin/                   # Working example against httpbin.org
 │       ├── smokeharvest.config.yaml
 │       ├── critical-path.md
+│       ├── .env.example
 │       └── baseline/
-│           └── form-submission.spec.ts
+│           └── test_form_submission.py
+├── scripts/
+│   └── diff_screenshots.py       # Visual diff utility
 ├── templates/
 │   ├── smokeharvest.config.yaml   # Starter config to copy into your project
+│   ├── .env.example               # Environment template—copy to .env
+│   ├── CLAUDE.md.snippet          # Add this to your project's CLAUDE.md
 │   └── prompts/
 │       ├── initial-crawl.md       # Claude Code prompt for first run
-│       └── diff-and-report.md     # Claude Code prompt for subsequent runs
+│       ├── diff-and-report.md     # Claude Code prompt for subsequent runs
+│       └── self-heal.md           # Fix failing tests from live app behavior
 └── docs/
-    └── auth-patterns.md           # Handling OTP, OAuth, and other auth flows
+    ├── auth-patterns.md           # Handling OTP, OAuth, and other auth flows
+    ├── visual-diffing.md          # Screenshot diffing recipe and folder structure
+    └── explore-health-checks.md   # Detecting failures during explore
 ```
 
 ## Quick Start
@@ -287,17 +296,37 @@ On subsequent runs, SmokeHarvest compares generated tests against the baseline a
 
 #### Screenshot Diffing (Optional but Useful)
 
-If you capture screenshots to compare runs, keep them stable:
+If you capture screenshots to compare runs, use the consolidated folder structure:
+
+```
+screenshots/20260129-181436/
+├── explore/      <- MCP explore screenshots (NN-description.png)
+├── script/       <- Playwright test screenshots (NN-description.png)
+├── diff/         <- generated pixel difference images
+└── report.md     <- generated verdict and RMS values
+```
+
+Rules for stable diffs:
 
 - **Fix the viewport** (example: 1024x768) for both exploratory and scripted runs.
 - **Prefer viewport-only screenshots** (not full-page) to avoid height drift from dynamic content.
-- **Name pairs consistently** (e.g., `explore-01-home.png` and `script-01-home.png`) so automated diffs can match them.
+- **Name files consistently** (e.g., `01-login.png`, `03-after-otp.png`). The diff script pairs files by matching filenames across `explore/` and `script/`.
 
-If you are using Playwright MCP inside Docker, screenshots are written in the container (often under `/tmp/playwright-output`). Copy them to your repo with:
+The diff script at `scripts/diff_screenshots.py` classifies each step using RMS thresholds tuned from real cross-environment runs (Docker Chromium vs local Chromium):
+
+| RMS | Verdict | Meaning |
+|-----|---------|---------|
+| < 22 | **MATCH** | Rendering noise only |
+| 22–30 | **REVIEW** | Possible change |
+| ≥ 30 | **DIFFERS** | Different content |
+
+If you are using Playwright MCP inside Docker, copy explore screenshots into the run folder:
 
 ```bash
-docker cp <container_name>:/tmp/playwright-output/. /path/to/your/repo/screenshots/
+docker cp <container_name>:/tmp/playwright-output/. screenshots/$TIMESTAMP/explore/
 ```
+
+See [docs/visual-diffing.md](./docs/visual-diffing.md) for the full recipe.
 
 ### 4. Output: GitHub PR
 
@@ -425,6 +454,7 @@ If the Playwright MCP changes, you update your prompts. If your app changes, you
 
 - [docs/auth-patterns.md](./docs/auth-patterns.md) — Handling authentication scenarios
 - [docs/visual-diffing.md](./docs/visual-diffing.md) — Optional screenshot diffing recipe
+- [docs/explore-health-checks.md](./docs/explore-health-checks.md) — Detecting failures during explore
 - [examples/httpbin/](./examples/httpbin/) — Working example you can run now
 
 ## Open Questions

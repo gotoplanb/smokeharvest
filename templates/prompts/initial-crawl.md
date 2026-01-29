@@ -60,3 +60,14 @@ claude "Read the prompt at templates/prompts/initial-crawl.md and execute it aga
 - The first run creates your **baseline** - this is "what the app does right now"
 - Commit these generated tests to your repo
 - Subsequent runs will diff against this baseline
+
+## Optional: Capture Explore Screenshots
+
+If you want a visual record of the first run, create a timestamped run folder and save explore screenshots during the crawl:
+
+```bash
+TIMESTAMP=$(date +%Y%m%d-%H%M%S)
+mkdir -p screenshots/$TIMESTAMP/explore
+```
+
+Name screenshots `NN-description.png` (e.g., `01-login.png`). These become the explore baseline for visual diffing on subsequent runs. See `docs/visual-diffing.md` for the full folder structure.

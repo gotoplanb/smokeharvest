@@ -61,14 +61,20 @@ smokeharvest/
 │       ├── .env.example           # Environment template (no secrets needed for httpbin)
 │       └── baseline/
 │           └── test_form_submission.py
+├── scripts/
+│   └── diff_screenshots.py       # Visual diff utility
 ├── templates/
 │   ├── smokeharvest.config.yaml   # Starter config—copy this
 │   ├── .env.example               # Environment template—copy to .env
+│   ├── CLAUDE.md.snippet          # Add this to your project's CLAUDE.md
 │   └── prompts/
 │       ├── initial-crawl.md       # Prompt for first run
-│       └── diff-and-report.md     # Prompt for subsequent runs
+│       ├── diff-and-report.md     # Prompt for subsequent runs
+│       └── self-heal.md           # Fix failing tests from live app behavior
 └── docs/
-    └── auth-patterns.md           # Handling login, OTP, OAuth, etc.
+    ├── auth-patterns.md           # Handling login, OTP, OAuth, etc.
+    ├── visual-diffing.md          # Optional screenshot diffing recipe
+    └── explore-health-checks.md   # Detecting failures during explore
 ```
 
 ## Requirements
@@ -120,6 +126,60 @@ This is intentionally **not** a maintained package:
 - The value is in the idea and the prompts, not code that needs updates
 
 If the Playwright MCP changes, update your prompts. If your app changes, update your config. You own it.
+
+## Adding to an Existing Project
+
+SmokeHarvest is designed to drop into a brownfield project. The goal is to get the docs and prompts into your repo so Claude Code can reference them naturally.
+
+### Setup
+
+1. Download the zip from GitHub (no git history needed)
+2. Unzip and copy the entire `smokeharvest/` folder into your project root:
+   ```
+   your-project/
+   ├── src/
+   ├── tests/
+   ├── smokeharvest/          ← drop it here
+   │   ├── README.md
+   │   ├── SPEC.md
+   │   ├── docs/
+   │   ├── scripts/
+   │   ├── templates/
+   │   └── examples/
+   └── CLAUDE.md
+   ```
+3. Add the SmokeHarvest snippet to your project's `CLAUDE.md`:
+   ```bash
+   cat smokeharvest/templates/CLAUDE.md.snippet >> CLAUDE.md
+   ```
+   This tells Claude Code where the docs and prompts live so it references them automatically during explore, diff, and self-heal workflows.
+4. Copy the starter config into your project root and customize it:
+   ```bash
+   cp smokeharvest/templates/smokeharvest.config.yaml .
+   cp smokeharvest/templates/.env.example .env
+   ```
+5. Edit `smokeharvest.config.yaml` with your app's critical paths
+6. Edit `.env` with your test credentials
+7. Commit `smokeharvest/` and `smokeharvest.config.yaml` to your repo (never commit `.env`)
+
+### Why the whole folder?
+
+You might think you only need the templates and prompts. But:
+
+- **The docs are the prompts' context.** When Claude reads `self-heal.md`, it references `docs/explore-health-checks.md` for guidance. Without the docs, it loses that judgment.
+- **The examples show Claude the expected output format.** The httpbin baseline helps Claude understand what generated tests should look like.
+- **The SPEC explains the philosophy.** Claude makes better decisions when it understands *why* the system works the way it does, not just *what* to do.
+- **It's small.** The entire repo is a handful of markdown files, one Python script, and one YAML template. No dependencies, no build step.
+
+### Keeping it current
+
+Since this is a recipe, not a package, there's no auto-update mechanism. If you want upstream changes:
+
+1. Download the latest zip
+2. Diff it against your `smokeharvest/` folder
+3. Cherry-pick what you want
+
+Or don't. Your copy is yours to evolve.
 
 ## Multi-Environment Setup
 
@@ -191,6 +251,7 @@ This turns SmokeHarvest into **deployment pipeline observability**—you're not 
 - [SPEC.md](./SPEC.md) — Full specification and design rationale
 - [docs/auth-patterns.md](./docs/auth-patterns.md) — Handling authentication scenarios
 - [docs/visual-diffing.md](./docs/visual-diffing.md) — Optional screenshot diffing recipe
+- [docs/explore-health-checks.md](./docs/explore-health-checks.md) — Detecting failures during explore (don't blindly trust the crawl)
 - [examples/httpbin/](./examples/httpbin/) — Working example you can run now
 
 ## License
